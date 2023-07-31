@@ -25,6 +25,7 @@ valid_credentials = {'example_user1': 'example_password', 'example_user2': 'pass
 # logic for login, add, update and delete requests
 #----------------------------------------#
 
+
 def authenticate_login(userid, password):
     """takes user input login info and verifies whether they exist in the dictionary of valid credentials"""
     """returns True for valid login, False for invalid login"""

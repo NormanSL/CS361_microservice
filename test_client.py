@@ -88,6 +88,55 @@ def delete_credentials(client_socket):
 # define basic UI
 # ---------------------------------------#
 
+def main():
+
+    # establish TCP socket
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # connection address
+    server_address = ('localhost', port_number)
+    client_socket.connect(server_address)
+
+    # start the UI
+    try:
+        while True:
+            print('\nAvailable commands:')
+            print('1. Login Verification')
+            print('2. Add Credentials')
+            print('3. Update Credentials')
+            print('4. Delete Credentials')
+            print('5. Exit')
+
+            # get input
+            command = input('Enter a number from the menu above: ')
+
+            # direct to corresponding logic for specified command
+            if command == '1':
+                login_verification(client_socket)
+
+            elif command == '2':
+                add_credentials(client_socket)
+
+            elif command == '3':
+                update_credentials(client_socket)
+
+            elif command == '4':
+                delete_credentials(client_socket)
+
+            elif command == '5':
+                break
+
+            else:
+                print('Invalid command, give it another go.')
+
+    # close the socket
+    finally:
+        client_socket.close()
+
+
+if __name__ == '__main__':
+    main()
+
 
 
 
