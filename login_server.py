@@ -72,21 +72,28 @@ def client_handler(client_socket):
     """uses socket to receive user input strings"""
 
     # first input string
-    userid = client_socket.recv(max_buffer).decode(decoder)
+    userid = receive_message(client_socket)
 
     # second input string
-    password = client_socket.recv(max_buffer).decode(decoder)
+    password = receive_message(client_socket)
 
     # authenticate user
     if authenticate_login(userid, password):
 
-        client_socket.send(b'Login successful')
+        client_socket.sendall(b'Login successful')
 
     else:
 
         client_socket.send(b'Invalid login')
 
     client_socket.close()
+
+
+def receive_message(client_socket):
+    """receive message from socket, and print it for debugging help"""
+    msg = client_socket.recv(max_buffer).decode(decoder)
+    print(msg)
+    return msg
 
 # ---------------------------------------#
 # main function to define the socket
@@ -98,76 +105,76 @@ def main():
     """establish socket and define logic for requests"""
 
     # TCP socket
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
 
-    # bind to address and port using 12345 as a placeholder
-    server_address = ('localhost', port_number)
+        # bind to address and port using 12345 as a placeholder
+        server_address = ('localhost', port_number)
 
-    server_socket.bind(server_address)
+        server_socket.bind(server_address)
 
-    # listen method takes an int that represents the maximum backlog queue before the server stops accepting requests
-    server_socket.listen(1)
+        # listen method takes an int that represents the maximum backlog queue before the server stops accepting requests
+        server_socket.listen(1)
 
-    print('Server listening on {}:{}'.format(*server_address))
+        print('Server listening on {}:{}'.format(*server_address))
 
-    try:
+        try:
 
-        while True:
+            while True:
 
-            # establish a connection
-            client_socket, client_address = server_socket.accept()
-            print('Received connection from:', client_address)
+                # establish a connection
+                client_socket, client_address = server_socket.accept()
+                print('Received connection from:', client_address)
 
-            # handle the request
-            request = client_socket.recv(max_buffer).decode(decoder)
+                # handle the request
+                request = receive_message(client_socket)
 
-            # login request
-            if request == 'LOGIN':
-                client_handler(client_socket)
+                # login request
+                if request == 'LOGIN':
+                    client_handler(client_socket)
 
-            # add user request
-            elif request == 'ADD':
-                userid = client_socket.recv(max_buffer).decode(decoder)
-                password = client_socket.recv(max_buffer).decode(decoder)
+                # add user request
+                elif request == 'ADD':
+                    userid = receive_message(client_socket)
+                    password = receive_message(client_socket)
 
-                add_credentials(userid, password)
+                    add_credentials(userid, password)
 
-                if valid_credentials[userid] == password:
+                    if valid_credentials[userid] == password:
 
-                    client_socket.send(b'User successfully added!')
+                        client_socket.send(b'User successfully added!')
+
+                    else:
+
+                        client_socket.send(b'Error!  User not added.')
+
+                    client_socket.close()
+
+                # update user request
+                elif request == 'UPDATE':
+                    userid = receive_message(client_socket)
+                    new_password = receive_message(client_socket)
+
+                    update_credentials(userid, new_password)
+
+                    client_socket.send(b'User successfully updated!')
+                    client_socket.close()
+
+                # delete request
+                elif request == 'DELETE':
+                    userid = receive_message(client_socket)
+
+                    delete_credentials(userid)
+
+                    client_socket.send(b'User successfully deleted!')
+                    client_socket.close()
 
                 else:
+                    client_socket.send(b'Invalid request.')
+                    client_socket.close()
 
-                    client_socket.send(b'Error!  User not added.')
-
-                client_socket.close()
-
-            # update user request
-            elif request == 'UPDATE':
-                userid = client_socket.recv(max_buffer).decode(decoder)
-                new_password = client_socket.recv(max_buffer).decode(decoder)
-
-                update_credentials(userid, new_password)
-
-                client_socket.send(b'User successfully updated!')
-                client_socket.close()
-
-            # delete request
-            elif request == 'DELETE':
-                userid = client_socket.recv(max_buffer).decode(decoder)
-
-                delete_credentials(userid)
-
-                client_socket.send(b'User successfully deleted!')
-                client_socket.close()
-
-            else:
-                client_socket.send(b'Invalid request.')
-                client_socket.close()
-
-    # use ctrl+c to kill the server neatly
-    except KeyboardInterrupt:
-        print('Server terminated.')
+        # use ctrl+c to kill the server neatly
+        except KeyboardInterrupt:
+            print('Server terminated.')
 
 
 if __name__ == '__main__':

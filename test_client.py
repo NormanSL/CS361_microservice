@@ -7,6 +7,7 @@
 # ---------------------------------------#
 
 import socket   # using sockets for communication between server and client
+import time
 
 # variable to define max buffer size, defaulting to 1kb
 max_buffer = 1024
@@ -29,7 +30,10 @@ def login_verification(client_socket):
     password = input('Enter password: ')
 
     # pass input to the server
+    client_socket.sendall(b'LOGIN')
+    time.sleep(1)
     client_socket.sendall(userid.encode('utf-8'))
+    time.sleep(1)
     client_socket.sendall(password.encode('utf-8'))
 
     # receive and display result
@@ -45,7 +49,9 @@ def add_credentials(client_socket):
 
     # send ADD request and input
     client_socket.sendall(b'ADD')
+    time.sleep(1)
     client_socket.sendall(userid.encode(decoder))
+    time.sleep(1)
     client_socket.sendall(password.encode(decoder))
 
     # receive response and print
@@ -61,7 +67,9 @@ def update_credentials(client_socket):
 
     # send UPDATE request and input
     client_socket.sendall(b'UPDATE')
+    time.sleep(1)
     client_socket.sendall(userid.encode(decoder))
+    time.sleep(1)
     client_socket.sendall(new_password.encode(decoder))
 
     # receive response and print
@@ -76,6 +84,7 @@ def delete_credentials(client_socket):
 
     # send the DELETE request and input
     client_socket.sendall(b'DELETE')
+    time.sleep(1)
     client_socket.sendall(userid.encode(decoder))
 
     # receive response and print
@@ -90,25 +99,31 @@ def delete_credentials(client_socket):
 
 def main():
 
-    # establish TCP socket
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # # establish TCP socket
+    # client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # connection address
-    server_address = ('localhost', port_number)
-    client_socket.connect(server_address)
+    # # connection address
+    # server_address = ('localhost', port_number)
+    # client_socket.connect(server_address)
 
     # start the UI
-    try:
-        while True:
-            print('\nAvailable commands:')
-            print('1. Login Verification')
-            print('2. Add Credentials')
-            print('3. Update Credentials')
-            print('4. Delete Credentials')
-            print('5. Exit')
+    while True:
+        print('\nAvailable commands:')
+        print('1. Login Verification')
+        print('2. Add Credentials')
+        print('3. Update Credentials')
+        print('4. Delete Credentials')
+        print('5. Exit')
 
-            # get input
-            command = input('Enter a number from the menu above: ')
+        # get input
+        command = input('Enter a number from the menu above: ')
+
+        # establish TCP socket
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+
+            # connection address
+            server_address = ('localhost', port_number)
+            client_socket.connect(server_address)
 
             # direct to corresponding logic for specified command
             if command == '1':
@@ -129,9 +144,6 @@ def main():
             else:
                 print('Invalid command, give it another go.')
 
-    # close the socket
-    finally:
-        client_socket.close()
 
 
 if __name__ == '__main__':
