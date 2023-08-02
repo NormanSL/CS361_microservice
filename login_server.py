@@ -21,6 +21,23 @@ decoder = 'utf-8'
 # NB this hard-coded plaintext approach lacks security and would not be used in production
 valid_credentials = {'example_user1': 'example_password', 'example_user2': 'password', 'Lauren': 'Norman'}
 
+line_buffer = []
+
+def receive_message(client_socket):
+    """receive message from socket, and print it for debugging help"""
+
+    # If the buffer is empty, we need to read from the socket
+    if len(line_buffer) == 0:
+
+        msg = client_socket.recv(max_buffer).decode(decoder)
+        print(msg)
+
+        line_buffer.extend(msg.splitlines())
+
+    # Return (and remove) the first line in the buffer
+    return line_buffer.pop(0).rstrip('\n')
+
+
 # ---------------------------------------#
 # logic for login, add, update and delete requests
 #----------------------------------------#
@@ -88,12 +105,6 @@ def client_handler(client_socket):
 
     client_socket.close()
 
-
-def receive_message(client_socket):
-    """receive message from socket, and print it for debugging help"""
-    msg = client_socket.recv(max_buffer).decode(decoder)
-    print(msg)
-    return msg
 
 # ---------------------------------------#
 # main function to define the socket

@@ -18,6 +18,11 @@ port_number = 12345
 # variable to define scheme for encoding/decoding byte literals
 decoder = 'utf-8'
 
+
+def send_line(client_socket, msg):
+    line = msg + '\n'
+    client_socket.sendall(line.encode(decoder))
+
 # ---------------------------------------#
 # logic for login, add, update and delete requests
 #----------------------------------------#
@@ -30,11 +35,9 @@ def login_verification(client_socket):
     password = input('Enter password: ')
 
     # pass input to the server
-    client_socket.sendall(b'LOGIN')
-    time.sleep(1)
-    client_socket.sendall(userid.encode('utf-8'))
-    time.sleep(1)
-    client_socket.sendall(password.encode('utf-8'))
+    send_line(client_socket, 'LOGIN')
+    send_line(client_socket, userid)
+    send_line(client_socket, password)
 
     # receive and display result
     response = client_socket.recv(max_buffer).decode(decoder)
