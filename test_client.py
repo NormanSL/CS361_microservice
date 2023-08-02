@@ -51,11 +51,10 @@ def add_credentials(client_socket):
     password = input('Enter new password: ')
 
     # send ADD request and input
-    client_socket.sendall(b'ADD')
-    time.sleep(1)
-    client_socket.sendall(userid.encode(decoder))
-    time.sleep(1)
-    client_socket.sendall(password.encode(decoder))
+    send_line(client_socket, 'ADD')
+    send_line(client_socket, userid)
+    send_line(client_socket, password)
+
 
     # receive response and print
     response = client_socket.recv(max_buffer).decode(decoder)
@@ -69,11 +68,9 @@ def update_credentials(client_socket):
     new_password = input('Enter new password: ')
 
     # send UPDATE request and input
-    client_socket.sendall(b'UPDATE')
-    time.sleep(1)
-    client_socket.sendall(userid.encode(decoder))
-    time.sleep(1)
-    client_socket.sendall(new_password.encode(decoder))
+    send_line(client_socket, 'UPDATE')
+    send_line(client_socket, userid)
+    send_line(client_socket, new_password)
 
     # receive response and print
     response = client_socket.recv(max_buffer).decode(decoder)
@@ -86,9 +83,8 @@ def delete_credentials(client_socket):
     userid = input('Enter userid to delete: ')
 
     # send the DELETE request and input
-    client_socket.sendall(b'DELETE')
-    time.sleep(1)
-    client_socket.sendall(userid.encode(decoder))
+    send_line(client_socket, 'DELETE')
+    send_line(client_socket, userid) 
 
     # receive response and print
     response = client_socket.recv(max_buffer).decode(decoder)
