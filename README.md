@@ -67,3 +67,4 @@ Email me at NormanSL@OregonState.edu
 
 
 
+[Sequence diagram.pdf](https://github.com/NormanSL/CS361_microservice/files/12245393/Sequence.diagram.pdf)
