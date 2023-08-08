@@ -45,7 +45,7 @@ Clients can connect to the server using the provided client application or any c
 
 ## Security Considerations
 
-It's important to note that this microservice lacks several essential security features and is intended for educational purposes only. In a real-world application, you should consider implementing some or all of the following security measures:
+It's important to note that this microservice lacks several essential security features and is intended for educational/demonstration purposes only. In a real-world application, you should consider implementing some or all of the following security measures:
 
 - Password Encryption: Store user passwords securely by encrypting them before storing in the database.
 
